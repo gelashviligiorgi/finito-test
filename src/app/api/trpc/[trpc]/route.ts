@@ -1,0 +1,18 @@
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { appRouter } from "@/server/trpc/router";
+import type { Context } from "@/server/trpc/trpc";
+
+function createContext(): Context {
+  // Plug in real auth here (e.g. read session cookie) when ready.
+  return {};
+}
+
+const handler = (req: Request) =>
+  fetchRequestHandler({
+    endpoint: "/api/trpc",
+    req,
+    router: appRouter,
+    createContext,
+  });
+
+export { handler as GET, handler as POST };
