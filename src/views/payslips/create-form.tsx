@@ -111,24 +111,23 @@ export function CreatePayslipForm({
     !isDuplicate &&
     lineItems.some((item) => item.paymentCategoryId !== "" && parseFloat(item.units) > 0);
 
+  const hasNoRates = employeeId !== null && availableCategories.length === 0;
+
   return (
-    <div className="rounded-lg border p-5 space-y-4">
-      <h2 className="font-semibold text-base">New Payslip</h2>
-
-      {isDuplicate && (
-        <p className="text-sm text-destructive">
-          A payslip for this employee on {date} already exists.
-        </p>
-      )}
-
-      <div className="flex flex-wrap gap-4">
-        <div className="space-y-2">
-          <label className="block text-sm text-muted-foreground mb-2">Employee</label>
+    <div className="space-y-6">
+      {/* Employee + Date */}
+      <div className="flex flex-wrap gap-x-6 gap-y-4 items-start">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Employee
+          </label>
           <EmployeeCombobox employees={employees} value={employeeId} onChange={setEmployeeId} />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm text-muted-foreground mb-2">Date</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Date
+          </label>
           <Input
             type="date"
             value={date}
@@ -138,70 +137,91 @@ export function CreatePayslipForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm text-muted-foreground mb-2">Line Items</label>
-        {employeeId === null && (
+      {isDuplicate && (
+        <p className="text-sm text-destructive">
+          A payslip for this employee on {date} already exists.
+        </p>
+      )}
+
+      {/* Line Items */}
+      <div className="space-y-3">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          Line Items
+        </p>
+
+        {employeeId === null ? (
           <p className="text-sm text-muted-foreground">
             Select an employee to see available categories.
           </p>
-        )}
-        {employeeId !== null && availableCategories.length === 0 && (
+        ) : hasNoRates ? (
           <p className="text-sm text-amber-600">
             No rates configured for this employee on {date}. Set rates first.
           </p>
-        )}
-        {availableCategories.length > 0 &&
-          lineItems.map((item) => (
-            <div key={item.id} className="flex items-center gap-2">
-              <Select
-                value={item.paymentCategoryId}
-                onValueChange={(val) => val && updateRow(item.id, "paymentCategoryId", val)}
-                items={categoryItems}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Category…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableCategories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id.toString()}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Units"
-                value={item.units}
-                onChange={(e) => updateRow(item.id, "units", e.target.value)}
-                className="w-28"
-              />
-
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                onClick={() => removeRow(item.id)}
-                disabled={lineItems.length === 1}
-              >
-                <X />
-              </Button>
+        ) : (
+          <div className="space-y-2">
+            {/* Column headers */}
+            <div className="flex items-center gap-2 px-0.5">
+              <span className="w-48 text-xs text-muted-foreground">Category</span>
+              <span className="w-28 text-xs text-muted-foreground">Units</span>
             </div>
-          ))}
 
-        {availableCategories.length > 0 && (
-          <Button size="sm" variant="outline" onClick={addRow}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            Add row
-          </Button>
+            {lineItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-2">
+                <Select
+                  value={item.paymentCategoryId}
+                  onValueChange={(val) => val && updateRow(item.id, "paymentCategoryId", val)}
+                  items={categoryItems}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCategories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id.toString()}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0"
+                  value={item.units}
+                  onChange={(e) => updateRow(item.id, "units", e.target.value)}
+                  className="w-28"
+                />
+
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={() => removeRow(item.id)}
+                  disabled={lineItems.length === 1}
+                >
+                  <X />
+                </Button>
+              </div>
+            ))}
+
+            <Button size="sm" variant="outline" onClick={addRow} className="mt-1">
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
+              Add row
+            </Button>
+          </div>
         )}
       </div>
 
-      <Button onClick={() => void handleSubmit()} disabled={!isValid || isSaving}>
-        {isSaving ? "Saving…" : "Create payslip"}
-      </Button>
+      {/* Footer */}
+      <div className="flex items-center gap-3 pt-1">
+        <Button onClick={() => void handleSubmit()} disabled={!isValid || isSaving}>
+          {isSaving ? "Saving…" : "Create payslip"}
+        </Button>
+        <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground">
+          Reset
+        </Button>
+      </div>
     </div>
   );
 }
