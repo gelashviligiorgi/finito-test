@@ -52,6 +52,19 @@ export const payslipsRouter = router({
     )
     .mutation(({ input }) => {
       return db.transaction((tx) => {
+        const duplicate = tx
+          .select({ id: payslips.id })
+          .from(payslips)
+          .where(and(eq(payslips.employeeId, input.employeeId), eq(payslips.date, input.date)))
+          .get();
+
+        if (duplicate) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: `A payslip for this employee on ${input.date} already exists`,
+          });
+        }
+
         const [payslip] = tx
           .insert(payslips)
           .values({

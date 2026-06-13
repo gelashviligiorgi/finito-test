@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `payslips_employee_date_unique` ON `payslips` (`employee_id`,`date`);

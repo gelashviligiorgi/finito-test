@@ -48,6 +48,7 @@ export function PayslipsView() {
         defaultDate={effectiveDate}
         onSave={handleCreate}
         isSaving={create.isPending}
+        existingPayslips={payslips}
       />
 
       <div className="space-y-3">

@@ -1,17 +1,21 @@
 import { relations } from "drizzle-orm";
-import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { employees } from "./employees";
 import { paymentCategories } from "./payment-categories";
 
-export const payslips = sqliteTable("payslips", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  employeeId: integer("employee_id")
-    .notNull()
-    .references(() => employees.id),
-  date: text("date").notNull(), // YYYY-MM-DD
-  createdAt: text("created_at").notNull(),
-  createdBy: text("created_by").notNull(),
-});
+export const payslips = sqliteTable(
+  "payslips",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    employeeId: integer("employee_id")
+      .notNull()
+      .references(() => employees.id),
+    date: text("date").notNull(), // YYYY-MM-DD
+    createdAt: text("created_at").notNull(),
+    createdBy: text("created_by").notNull(),
+  },
+  (t) => [uniqueIndex("payslips_employee_date_unique").on(t.employeeId, t.date)]
+);
 
 export const payslipLineItems = sqliteTable("payslip_line_items", {
   id: integer("id").primaryKey({ autoIncrement: true }),
