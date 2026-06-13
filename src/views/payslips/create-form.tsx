@@ -56,10 +56,6 @@ export function CreatePayslipForm({
   const availableCategories =
     employeeId !== null ? categories.filter((c) => ratedCategoryIds.has(c.id)) : [];
 
-  const categoryItems = Object.fromEntries(
-    availableCategories.map((c) => [c.id.toString(), c.name])
-  );
-
   function addRow() {
     setLineItems((prev) => [...prev, makeItem()]);
   }
@@ -165,45 +161,59 @@ export function CreatePayslipForm({
               <span className="w-28 text-xs text-muted-foreground">Units</span>
             </div>
 
-            {lineItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-2">
-                <Select
-                  value={item.paymentCategoryId}
-                  onValueChange={(val) => val && updateRow(item.id, "paymentCategoryId", val)}
-                  items={categoryItems}
-                >
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableCategories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {lineItems.map((item) => {
+              const usedIds = new Set(
+                lineItems
+                  .filter((li) => li.id !== item.id && li.paymentCategoryId !== "")
+                  .map((li) => li.paymentCategoryId)
+              );
+              const rowCategories = availableCategories.filter(
+                (c) => !usedIds.has(c.id.toString())
+              );
+              const rowItems = Object.fromEntries(
+                rowCategories.map((c) => [c.id.toString(), c.name])
+              );
 
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0"
-                  value={item.units}
-                  onChange={(e) => updateRow(item.id, "units", e.target.value)}
-                  className="w-28"
-                />
+              return (
+                <div key={item.id} className="flex items-center gap-2">
+                  <Select
+                    value={item.paymentCategoryId}
+                    onValueChange={(val) => val && updateRow(item.id, "paymentCategoryId", val)}
+                    items={rowItems}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Select…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {rowCategories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  onClick={() => removeRow(item.id)}
-                  disabled={lineItems.length === 1}
-                >
-                  <X />
-                </Button>
-              </div>
-            ))}
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                    value={item.units}
+                    onChange={(e) => updateRow(item.id, "units", e.target.value)}
+                    className="w-28"
+                  />
+
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    onClick={() => removeRow(item.id)}
+                    disabled={lineItems.length === 1}
+                  >
+                    <X />
+                  </Button>
+                </div>
+              );
+            })}
 
             <Button size="sm" variant="outline" onClick={addRow} className="mt-1">
               <Plus className="mr-1.5 h-3.5 w-3.5" />
