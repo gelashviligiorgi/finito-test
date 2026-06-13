@@ -38,6 +38,8 @@ export function CreatePayslipForm({ employees, categories, defaultDate, onSave, 
   const [date, setDate] = useState(defaultDate);
   const [lineItems, setLineItems] = useState<LineItem[]>([makeItem()]);
 
+  const categoryItems = Object.fromEntries(categories.map((c) => [c.id.toString(), c.name]));
+
   function addRow() {
     setLineItems((prev) => [...prev, makeItem()]);
   }
@@ -111,6 +113,7 @@ export function CreatePayslipForm({ employees, categories, defaultDate, onSave, 
             <Select
               value={item.paymentCategoryId}
               onValueChange={(val) => val && updateRow(item.id, "paymentCategoryId", val)}
+              items={categoryItems}
             >
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Category…" />

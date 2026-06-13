@@ -50,9 +50,9 @@ export const payslipsRouter = router({
           .min(1),
       })
     )
-    .mutation(async ({ input }) => {
-      return db.transaction(async (tx) => {
-        const [payslip] = await tx
+    .mutation(({ input }) => {
+      return db.transaction((tx) => {
+        const [payslip] = tx
           .insert(payslips)
           .values({
             employeeId: input.employeeId,
@@ -60,22 +60,26 @@ export const payslipsRouter = router({
             createdAt: new Date().toISOString(),
             createdBy: "admin",
           })
-          .returning();
+          .returning()
+          .all();
 
         if (!payslip) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-        await tx.insert(payslipLineItems).values(
-          input.lineItems.map((item) => ({
-            payslipId: payslip.id,
-            paymentCategoryId: item.paymentCategoryId,
-            units: item.units,
-          }))
-        );
+        tx.insert(payslipLineItems)
+          .values(
+            input.lineItems.map((item) => ({
+              payslipId: payslip.id,
+              paymentCategoryId: item.paymentCategoryId,
+              units: item.units,
+            }))
+          )
+          .run();
 
-        const employeeRates = await tx
+        const employeeRates = tx
           .select()
           .from(rates)
-          .where(eq(rates.employeeId, input.employeeId));
+          .where(eq(rates.employeeId, input.employeeId))
+          .all();
 
         const rateMap = getAllRatesAsOf(employeeRates, input.date);
         const lineItemsForCompute = input.lineItems.map((item) => ({
@@ -86,10 +90,12 @@ export const payslipsRouter = router({
         }));
         const originalTotal = computeTotal(lineItemsForCompute, rateMap);
 
-        await tx.insert(payslipSnapshots).values({
-          payslipId: payslip.id,
-          originalTotal,
-        });
+        tx.insert(payslipSnapshots)
+          .values({
+            payslipId: payslip.id,
+            originalTotal,
+          })
+          .run();
 
         return payslip;
       });
