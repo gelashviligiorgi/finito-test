@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/contexts/trpc-provider";
 import { useEffectiveDate } from "@/contexts/effective-date-context";
-import { EmployeeCombobox } from "./employee-combobox";
+import { EmployeeCombobox } from "@/components/employee-combobox";
 import { RateTable } from "./rate-table";
 
 export function RatesView() {

@@ -127,4 +127,7 @@
   html {
     @apply font-sans;
   }
+  [data-base-ui-focus-guard] {
+    margin: 0 !important;
+  }
 }
