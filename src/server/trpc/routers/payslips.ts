@@ -52,6 +52,23 @@ export const payslipsRouter = router({
     )
     .mutation(({ input }) => {
       return db.transaction((tx) => {
+        const employeeRates = tx
+          .select()
+          .from(rates)
+          .where(eq(rates.employeeId, input.employeeId))
+          .all();
+
+        const rateMap = getAllRatesAsOf(employeeRates, input.date);
+        const invalidCategory = input.lineItems.find(
+          (item) => !rateMap.has(item.paymentCategoryId)
+        );
+        if (invalidCategory) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `No rate configured for category ${invalidCategory.paymentCategoryId} on ${input.date}`,
+          });
+        }
+
         const duplicate = tx
           .select({ id: payslips.id })
           .from(payslips)
@@ -88,13 +105,6 @@ export const payslipsRouter = router({
           )
           .run();
 
-        const employeeRates = tx
-          .select()
-          .from(rates)
-          .where(eq(rates.employeeId, input.employeeId))
-          .all();
-
-        const rateMap = getAllRatesAsOf(employeeRates, input.date);
         const lineItemsForCompute = input.lineItems.map((item) => ({
           id: 0,
           payslipId: payslip.id,
