@@ -41,10 +41,26 @@ function resetAndSeed() {
   sqlite.close();
 }
 
+export function seedRate(opts: {
+  employeeId: number;
+  paymentCategoryId: number;
+  amount: number;
+  effectiveFrom: string;
+}) {
+  const sqlite = new Database(TEST_DB_PATH);
+  sqlite.pragma("busy_timeout = 5000");
+  sqlite
+    .prepare(
+      "INSERT INTO rates (employee_id, payment_category_id, amount, effective_from, dismissed) VALUES (?, ?, ?, ?, 0)"
+    )
+    .run(opts.employeeId, opts.paymentCategoryId, opts.amount, opts.effectiveFrom);
+  sqlite.close();
+}
+
 export const test = base.extend({
-  page: async ({ page }, use) => {
+  page: async ({ page }, provide) => {
     resetAndSeed();
-    await use(page);
+    await provide(page);
   },
 });
 

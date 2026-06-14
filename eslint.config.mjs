@@ -4,6 +4,7 @@ import nextTypescript from "eslint-config-next/typescript";
 import prettierConfig from "eslint-config-prettier";
 
 const eslintConfig = [
+  { ignores: [".next-test/**", "e2e/**"] },
   ...nextConfig,
   ...nextCoreWebVitals,
   ...nextTypescript,

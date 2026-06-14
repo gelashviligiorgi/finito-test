@@ -206,6 +206,7 @@ export function CreatePayslipForm({
                   <Button
                     size="icon-sm"
                     variant="ghost"
+                    aria-label="Remove row"
                     onClick={() => removeRow(item.id)}
                     disabled={lineItems.length === 1}
                   >
