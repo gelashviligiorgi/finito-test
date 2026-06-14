@@ -9,6 +9,15 @@ CREATE TABLE `payment_categories` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE `payslips` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`employee_id` integer NOT NULL,
+	`date` text NOT NULL,
+	`created_at` text NOT NULL,
+	`created_by` text NOT NULL,
+	FOREIGN KEY (`employee_id`) REFERENCES `employees`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `payslip_line_items` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`payslip_id` integer NOT NULL,
@@ -23,15 +32,6 @@ CREATE TABLE `payslip_snapshots` (
 	`payslip_id` integer NOT NULL,
 	`original_total` real NOT NULL,
 	FOREIGN KEY (`payslip_id`) REFERENCES `payslips`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `payslips` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`employee_id` integer NOT NULL,
-	`date` text NOT NULL,
-	`created_at` text NOT NULL,
-	`created_by` text NOT NULL,
-	FOREIGN KEY (`employee_id`) REFERENCES `employees`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `rates` (
