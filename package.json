@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
-    "test:e2e": "playwright test"
+    "test:e2e": "next build && playwright test"
   },
   "lint-staged": {
     "*.{ts,tsx,mjs}": [
