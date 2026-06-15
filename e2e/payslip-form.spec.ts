@@ -55,7 +55,7 @@ test.describe("Create Payslip Form", () => {
     test("shows selected employee name after selection", async ({ page }) => {
       await page.getByRole("combobox").click();
       await page.getByRole("option", { name: "John Doe" }).click();
-      await expect(page.getByRole("combobox")).toContainText("John Doe");
+      await expect(page.locator('[data-slot="popover-trigger"]')).toContainText("John Doe");
     });
 
     test("search filters employees by name", async ({ page }) => {
@@ -293,7 +293,9 @@ test.describe("Create Payslip Form", () => {
 
     test("Reset clears employee selection", async ({ page }) => {
       await page.getByRole("button", { name: "Reset" }).click();
-      await expect(page.getByRole("combobox")).toContainText("Select an employee…");
+      await expect(page.locator('[data-slot="popover-trigger"]')).toContainText(
+        "Select an employee…"
+      );
     });
 
     test("Reset restores date to today", async ({ page }) => {

@@ -38,7 +38,7 @@ test.describe("Rates page", () => {
     test("shows selected employee name after selection", async ({ page }) => {
       await page.getByRole("combobox").click();
       await page.getByRole("option", { name: "John Doe" }).click();
-      await expect(page.getByRole("combobox")).toContainText("John Doe");
+      await expect(page.locator('[data-slot="popover-trigger"]')).toContainText("John Doe");
     });
 
     test("shows rate table after selecting an employee", async ({ page }) => {

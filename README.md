@@ -103,6 +103,8 @@ npm run test:e2e
 
 Playwright starts a dev server on port 3001 pointing at `test.db` (separate from the dev database). The global setup migrates `test.db` on first run. Each test resets and reseeds all tables before running.
 
+A real Chromium window opens while tests run (`headless: false` in `playwright.config.ts`). This is intentional for local development so you can watch the tests execute. In CI, `headless` defaults to `true` — no browser window opens.
+
 E2E test files live in `e2e/`:
 
 | File                       | What it covers                                          |
