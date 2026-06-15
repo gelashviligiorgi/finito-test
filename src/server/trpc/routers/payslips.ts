@@ -150,6 +150,8 @@ export const payslipsRouter = router({
             eq(rates.dismissed, false)
           )
         )
+        // desc(id) is the tiebreaker: multiple edits on the same effectiveFrom date
+        // form an implicit undo stack — each dismiss steps back to the previous version.
         .orderBy(desc(rates.effectiveFrom), desc(rates.id))
         .limit(1);
 

@@ -27,6 +27,8 @@ const enforceAuth = t.middleware(({ ctx, next }) => {
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+// Not yet used — wire procedures to protectedProcedure and populate ctx.user in
+// createContext (route.ts) when authentication is added.
 export const protectedProcedure = t.procedure.use(enforceAuth);
 
 // Re-export TRPCError so routers import from one place.

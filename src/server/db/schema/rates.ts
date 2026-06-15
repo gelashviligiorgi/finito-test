@@ -13,6 +13,8 @@ export const rates = sqliteTable("rates", {
     .references(() => paymentCategories.id),
   amount: real("amount").notNull(),
   effectiveFrom: text("effective_from").notNull(), // YYYY-MM-DD
+  // Rates are never updated or deleted. To change a rate, insert a new record with
+  // a newer effectiveFrom. Dismissing marks a record as superseded without erasing history.
   dismissed: integer("dismissed", { mode: "boolean" }).notNull().default(false),
 });
 

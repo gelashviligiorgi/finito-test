@@ -22,6 +22,8 @@ export const ratesRouter = router({
       return Array.from(rateMap.values());
     }),
 
+  // Always INSERTs a new row — never updates an existing one. "Updating" a rate means
+  // inserting a record with a newer effectiveFrom; getAllRatesAsOf picks the winner.
   upsert: publicProcedure
     .input(
       z.object({
